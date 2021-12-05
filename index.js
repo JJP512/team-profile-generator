@@ -3,6 +3,7 @@ const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
 
+
 const getRole = () => {
     return inquirer
                 .prompt(
@@ -119,12 +120,7 @@ const createIntern = () => {
                 })
 }
 
-
-
-
-
-getRole()
-.then(role => {
+const employeeType = role => {
     switch (role.role) {
         case "Manager":
             return createManager();
@@ -133,6 +129,50 @@ getRole()
         case "Intern":
             return createIntern();
     }
-}).then(employee => {
-    console.log(employee);
+}
+
+const addEmployee = employees => {
+    var employeeList = employees;
+
+    return inquirer
+            .prompt(
+                {
+                    type: "confirm",
+                    name: "addEmployee",
+                    message: "Would you like to add another employee?",
+                    default: false
+                }
+            )
+            .then(response => {
+                if (response.addEmployee) {
+                    employeeList()
+                    .then(employees => {
+                        employeeList.push(employees);
+                    })
+                    .then(addEmployee);
+                } else {
+                    return employees;
+                }
+            })
+};
+
+
+
+
+const employeeList = () => {
+    const employees = [];
+
+    getRole()
+    .then(employeeType)
+    .then(employee => {
+        employees.push(employee);
+    })
+    
+    return employees;
+}
+
+employeeList()
+.then(addEmployee)
+.then(response => {
+    console.log(response.addEmployee);
 })
