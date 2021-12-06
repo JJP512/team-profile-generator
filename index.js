@@ -4,57 +4,53 @@ const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
 
 
-const getRole = () => {
-    return inquirer
-                .prompt(
-                {
-                    type: "list",
-                    name: "role",
-                    message: "What is your role title?",
-                    choices: [
-                        "Manager",
-                        "Engineer",
-                        "Intern",
-                    ]
-                }
-            );
-};
 
 const createManager = () => {
+    teamList = [];
+
     return inquirer
                 .prompt([
                     {
                         type: "text",
                         name: "name",
-                        message: "What is your name?"
+                        message: "What is your manager's name?"
                     },
                     {
                         type: "text",
                         name: "id",
-                        message: "What is your ID?"
+                        message: "What is your manager's ID?"
                     },
                     {
                         type: "text",
                         name: "email",
-                        message: "What is your email?"
+                        message: "What is your manager's email?"
                     },
                     {
                         type: "text",
                         name: "officeNumber",
-                        message: "What is your office number?"
+                        message: "What is your manager's office number?"
+                    },
+                    {
+                        type: "list",
+                        name: "addMember",
+                        message: "Would you like to add a team member?",
+                        choices: [
+                            "Engineer",
+                            "Intern",
+                            "None"
+                        ]
                     }
                 ]).then(employeeInfo => {
-                    name = employeeInfo.name;
-                    id = employeeInfo.id;
-                    email = employeeInfo.email;
-                    officeNumber = employeeInfo.officeNumber;
-
-                    return manager = new Manager(name, id, email, officeNumber);
+                    teamList.push(employeeInfo);
+                    
+                    newEmployee(teamList);
                 })
-    
 }
 
-const createEngineer = () => {
+const createEngineer = teamInfo => {
+    
+    teamList = teamInfo;
+
     return inquirer
                 .prompt([
                     {
@@ -76,18 +72,26 @@ const createEngineer = () => {
                         type: "text",
                         name: "github",
                         message: "What is your GitHub username?"
+                    },
+                    {
+                        type: "list",
+                        name: "addMember",
+                        message: "Would you like to add a team member?",
+                        choices: [
+                            "Engineer",
+                            "Intern",
+                            "None"
+                        ]
                     }
-                ]).then(employeeInfo => {
-                    name = employeeInfo.name;
-                    id = employeeInfo.id;
-                    email = employeeInfo.email;
-                    github = employeeInfo.github;
-
-                    return engineer = new Engineer(name, id, email, github);
+                ]).then(employeeInfo => {    
+                    teamList.push(employeeInfo);
+                    newEmployee(teamList);
                 })
 }
 
-const createIntern = () => {
+const createIntern = teamInfo => {
+    teamList = teamInfo;
+
     return inquirer
                 .prompt([
                     {
@@ -109,70 +113,42 @@ const createIntern = () => {
                         type: "text",
                         name: "school",
                         message: "What is the name of your school?"
+                    },
+                    {
+                        type: "list",
+                        name: "addMember",
+                        message: "Would you like to add a team member?",
+                        choices: [
+                            "Engineer",
+                            "Intern",
+                            "None"
+                        ]
                     }
                 ]).then(employeeInfo => {
-                    name = employeeInfo.name;
-                    id = employeeInfo.id;
-                    email = employeeInfo.email;
-                    school = employeeInfo.school;
-
-                    return intern = new Intern(name, id, email, school);
+                    teamList.push(employeeInfo);
+                    newEmployee(teamList);
                 })
 }
 
-const employeeType = role => {
-    switch (role.role) {
-        case "Manager":
-            return createManager();
+const testFunction = teamInfo => {
+    console.log(teamInfo);
+}
+
+i = 0;
+
+const newEmployee = teamInfo => {
+    switch (teamInfo[i].addMember) {
+        case "None":
+            break;
         case "Engineer":
-            return createEngineer();
+            i++;
+            return createEngineer(teamInfo);
         case "Intern":
-            return createIntern();
+            i++;
+            return createIntern(teamInfo);
     }
+
+    testFunction(teamInfo);    
 }
 
-const addEmployee = employees => {
-    var employeeList = employees;
-
-    return inquirer
-            .prompt(
-                {
-                    type: "confirm",
-                    name: "addEmployee",
-                    message: "Would you like to add another employee?",
-                    default: false
-                }
-            )
-            .then(response => {
-                if (response.addEmployee) {
-                    employeeList()
-                    .then(employees => {
-                        employeeList.push(employees);
-                    })
-                    .then(addEmployee);
-                } else {
-                    return employees;
-                }
-            })
-};
-
-
-
-
-const employeeList = () => {
-    const employees = [];
-
-    getRole()
-    .then(employeeType)
-    .then(employee => {
-        employees.push(employee);
-    })
-    
-    return employees;
-}
-
-employeeList()
-.then(addEmployee)
-.then(response => {
-    console.log(response.addEmployee);
-})
+createManager();
