@@ -2,7 +2,24 @@ const inquirer = require("inquirer");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
+const generateHTML = require("./src/page-template");
+const fs = require("fs");
 
+const writeFile = fileContent => {
+    return new Promise((resolve, reject) => {
+        fs.writeFile("./dist/index.html", fileContent, err => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            resolve({
+                ok: true,
+                message: "File created!"
+            });
+        });
+    });
+};
 
 
 const createManager = () => {
@@ -130,8 +147,10 @@ const createIntern = teamInfo => {
                 })
 }
 
-const testFunction = teamInfo => {
-    console.log(teamInfo);
+const createTemplate = teamInfo => {
+    html = generateHTML(teamInfo);
+
+    writeFile(html);
 }
 
 i = 0;
@@ -148,7 +167,7 @@ const newEmployee = teamInfo => {
             return createIntern(teamInfo);
     }
 
-    testFunction(teamInfo);    
+    createTemplate(teamInfo);    
 }
 
 createManager();
